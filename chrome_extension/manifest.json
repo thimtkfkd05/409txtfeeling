@@ -12,6 +12,7 @@
   "permissions": [
     "activeTab",
     "storage",
-    "http://localhost:3000/*"
+    "http://localhost:3000/*",
+    "http://home.iacryl.com:7070/*"
   ]
 }
