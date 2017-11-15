@@ -1,8 +1,8 @@
 body {
     margin: 5px 10px;
-    width: 200px;
     padding: 10px;
     white-space: nowrap;
+    overflow: auto;
 }
 
 h1 {
@@ -22,4 +22,9 @@ h1 {
 #result {
 	margin-left: 5px;
     font-size: 14px;
+}
+
+#emotion_check {
+    float: right;
+    margin: 10px 0;
 }
