@@ -31,9 +31,9 @@ app.use(errorHandler());
 
 //app.get('/', routes.index);
 app.post('/matching', routes.matching);
-app.get('/external_api', function(req, res) {
-    var url = req.query.url + '?';
-    var options = req.query.options;
+app.post('/external_api', function(req, res) {
+    var url = req.body.url + '?';
+    var options = req.body.options;
     var option_keys = Object.keys(options);
     option_keys.map(function(val, idx) {
         url += val + '=' + options[val];
