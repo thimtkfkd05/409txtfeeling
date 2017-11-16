@@ -92,12 +92,13 @@ var print_emotion = function() {
                         var script_code = [
                             'var e = document.createElement("p");',
                             'e.innerHTML="The main emotion of this article is ' + main_emotion + '";',
+                            'e.setAttribute("style", "color: initial;");',
                             'var article = document.querySelector("' + inner_className + '");', // add parentElement in fb
                             'article.insertBefore(e, article.childNodes[0]);'
                         ].join('');
 
                         if (main_emotion.match(filtering_list)) {
-                            script_code += 'article.setAttribute("style", "text-decoration: line-through;");'
+                            script_code += 'article.setAttribute("style", "color: #eee;");'
                         }
                         
                         chrome.tabs.executeScript(null, {
@@ -151,5 +152,5 @@ $(document).on('click', '#emotion_check', function() {
         check: true
     });
 
-    print_emotion();
+    //print_emotion();
 });
