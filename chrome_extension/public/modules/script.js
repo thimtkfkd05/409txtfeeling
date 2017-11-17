@@ -1,24 +1,3 @@
-var matching = function(user) {
-  chrome.tabs.executeScript({
-    code: 'document.querySelector("body").innerText'
-  }, function (result) {
-    if (result && result[0]) {
-      $.post('http://localhost:3000/matching', {
-        user: user,
-        result: result
-      }, function(res) {
-        if (res && res.result) {
-          $('#result').text(res.text);
-        } else {
-          $('#result').text('0/0 (0%)');
-        }
-      });
-    } else {
-      $('#result').text('0/0 (0%)');
-    }
-  });
-};
-
 var get_text_fb = function(callback) {
     chrome.tabs.executeScript({
         code: 'document.querySelectorAll(".text_exposed_root")'
@@ -40,13 +19,6 @@ var get_text_dc = function(callback) {
             $('#copy_reply td.reply span').remove();
             
             if ($('#copy_reply td.reply p').length) {
-                /*
-                chrome.tabs.executeScript({
-                    code: 'document.querySelectorAll("#gallery_re_contents tbody td.reply p").forEach(function(el) {el.remove();});'
-                }, function() {
-                    callback('#gallery_re_contents tbody > tr:nth-child([IDX]) td.reply', document.querySelectorAll('#copy_reply td.reply'), [4, 1]);
-                });
-                */
                 callback(null, 'already_check');
             } else {
                 callback('#gallery_re_contents tbody > tr:nth-child([IDX]) td.reply', document.querySelectorAll('#copy_reply td.reply'), [4, 1]);
@@ -57,7 +29,7 @@ var get_text_dc = function(callback) {
     });
 };
 
-var filtering_list = /싫음|분노|짜증남/;
+var filtering_list = /싫음|분노|짜증남|/; // change this by user selection
 
 var print_emotion = function() {
     //var get_text = get_text_fb;
@@ -107,7 +79,7 @@ var print_emotion = function() {
                             $('#emotion_check').attr('disabled', true);
                         });
                     } else {
-                        $('#result').text('Cannot find any text or emotion.');
+                        $('#result').html($('#result').html() + '<br>Cannot find any text or emotion.');
                     }
                 });
             });
@@ -126,31 +98,31 @@ var print_emotion = function() {
     });
 };
 
-chrome.storage.sync.get(function (data) {
-  $('#user').val(data.userWords || '');
-  //matching(data.userWords);
-
-    if (data.check) {
-        print_emotion();
-    }
-});
-
-/*
-$(document).on('change', '#user', function () {
-  var user = $(this).val();
-
-  chrome.storage.sync.set({
-    userWords: user
-  });
-
-  matching(user);
-});
-*/
-
 $(document).on('click', '#emotion_check', function() {
-    chrome.storage.sync.set({
-        check: true
-    });
+    console.log("DEBUG sync set true");
+    print_emotion(true);
+});
 
-    //print_emotion();
+$(document).on('click', '#filter_switch', function() {
+    $(this).find('.btn').toggleClass('active');  
+    $(this).find('.btn').toggleClass('btn-primary');
+    $(this).find('.btn').toggleClass('btn-default');
+    
+    var clicked = $(this).find('.btn-primary').val() === 'true';
+    $('#emotion_check').attr('disabled', !clicked);
+    
+    var sub_code = 'item.';
+    if (!clicked) {
+        sub_code += 'removeAttribute("style");';
+    } else {
+        sub_code += 'setAttribute("style", "color: #eee;");';
+    }
+    
+    var fb_class = '';
+    var dc_class = '#gallery_re_contents tbody td.reply';
+    chrome.tabs.executeScript(null, {
+        code: 'document.querySelectorAll("' + dc_class + '").forEach(function(item) {' +
+                  sub_code +
+              '});'
+    });
 });

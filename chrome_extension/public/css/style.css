@@ -3,6 +3,7 @@ body {
     padding: 10px;
     white-space: nowrap;
     overflow: auto;
+    width: 109px;
 }
 
 h1 {
@@ -27,4 +28,8 @@ h1 {
 #emotion_check {
     float: right;
     margin: 10px 0;
+}
+
+#filter_switch, #filter_switch .btn {
+    outline: none;
 }
