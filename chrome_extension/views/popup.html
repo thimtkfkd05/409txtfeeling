@@ -9,9 +9,16 @@
 
   <body>
     <h1>Text Feeling</h1>
-    <div id="result"></div>
+    <div id="result" class="progress">
+        <div class="progress-bar progress-bar-striped" role="progressbar" data-value="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        </div>
+    </div>
     <table id="copy_reply" style="display: none;"></table>
-
+    
+    <div id="filter_switch" class="btn-group btn-toggle">
+        <button type="button" class="btn btn-primary active" value=true data-toggle="button">On</button>
+        <button type="button" class="btn btn-default" value=false data-toggle="button">Off</button>
+    </div>
     <button class="btn btn-default" id="emotion_check">Check</button>
 
     <script src="../public/libs/jquery/jquery.min.js"></script>

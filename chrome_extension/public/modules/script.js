@@ -1,24 +1,3 @@
-var matching = function(user) {
-  chrome.tabs.executeScript({
-    code: 'document.querySelector("body").innerText'
-  }, function (result) {
-    if (result && result[0]) {
-      $.post('http://localhost:3000/matching', {
-        user: user,
-        result: result
-      }, function(res) {
-        if (res && res.result) {
-          $('#result').text(res.text);
-        } else {
-          $('#result').text('0/0 (0%)');
-        }
-      });
-    } else {
-      $('#result').text('0/0 (0%)');
-    }
-  });
-};
-
 var get_text_fb = function(callback) {
     chrome.tabs.executeScript({
         code: 'document.querySelectorAll(".text_exposed_root")'
@@ -40,13 +19,6 @@ var get_text_dc = function(callback) {
             $('#copy_reply td.reply span').remove();
             
             if ($('#copy_reply td.reply p').length) {
-                /*
-                chrome.tabs.executeScript({
-                    code: 'document.querySelectorAll("#gallery_re_contents tbody td.reply p").forEach(function(el) {el.remove();});'
-                }, function() {
-                    callback('#gallery_re_contents tbody > tr:nth-child([IDX]) td.reply', document.querySelectorAll('#copy_reply td.reply'), [4, 1]);
-                });
-                */
                 callback(null, 'already_check');
             } else {
                 callback('#gallery_re_contents tbody > tr:nth-child([IDX]) td.reply', document.querySelectorAll('#copy_reply td.reply'), [4, 1]);
@@ -57,14 +29,17 @@ var get_text_dc = function(callback) {
     });
 };
 
-var filtering_list = /싫음|분노|짜증남/;
+var filtering_list = /싫음|분노|짜증남|알 수 없음/; // change this by user selection
 
-var print_emotion = function() {
+var print_emotion = function(check) {
     //var get_text = get_text_fb;
     var get_text = get_text_dc;
     get_text(function(className, result, idx_info) {
-        $('#result').text('');
-        if (className && result) {
+        progress_work(0, true);
+        var total_num = 0;
+        var filtered_num = 0;
+        if (className && result && check) {
+            total_num = result.length;
             result.forEach(function(item, idx) {
                 $.post('http://localhost:3000/external_api', {
                     url: 'http://home.iacryl.com:7070/', 
@@ -98,16 +73,21 @@ var print_emotion = function() {
                         ].join('');
 
                         if (main_emotion.match(filtering_list)) {
-                            script_code += 'article.setAttribute("style", "color: #eee;");'
+                            script_code += 'article.setAttribute("style", "color: #eee;");';
+                            script_code += 'article.className += " filtered_text";';
+                            filtered_num++;
                         }
                         
                         chrome.tabs.executeScript(null, {
                             code: script_code
                         }, function() {
                             $('#emotion_check').attr('disabled', true);
+
+                            var percent = parseInt(filtered_num / total_num / 1000 * 100000, 10);
+                            progress_work(percent, true);
                         });
                     } else {
-                        $('#result').text('Cannot find any text or emotion.');
+                        //$('#result').html($('#result').html() + '<br>Cannot find any text or emotion.');
                     }
                 });
             });
@@ -119,38 +99,73 @@ var print_emotion = function() {
             });
             $('#result').html(feeling_info);
             */
-            $('#emotion_check').attr('disabled', true);
-        } else {
-            $('#result').text('No Text!!');
+            var percent = parseInt($('#copy_reply td.reply.filtered_text').length / $('#copy_reply td.reply').length / 1000 * 100000, 10);
+            progress_work(percent, true);
+        } else if (check) {
+            console.log("No Text Found");
         }
     });
 };
 
-chrome.storage.sync.get(function (data) {
-  $('#user').val(data.userWords || '');
-  //matching(data.userWords);
-
-    if (data.check) {
-        print_emotion();
-    }
+$(document).ready(function() {
+    print_emotion(false);
 });
-
-/*
-$(document).on('change', '#user', function () {
-  var user = $(this).val();
-
-  chrome.storage.sync.set({
-    userWords: user
-  });
-
-  matching(user);
-});
-*/
 
 $(document).on('click', '#emotion_check', function() {
-    chrome.storage.sync.set({
-        check: true
-    });
-
-    //print_emotion();
+    print_emotion(true);
 });
+
+$(document).on('click', '#filter_switch', function() {
+    $(this).find('.btn').toggleClass('active');  
+    $(this).find('.btn').toggleClass('btn-primary');
+    $(this).find('.btn').toggleClass('btn-default');
+    
+    var clicked = $(this).find('.btn-primary').val() === 'true';
+    $('#emotion_check').attr('disabled', !clicked);
+    
+    var sub_code = 'item.';
+    if (!clicked) {
+        sub_code += 'removeAttribute("style");';
+        progress_work(0, false);
+    } else {
+        sub_code += 'setAttribute("style", "color: #eee;");';
+        progress_work($('#result .progress-bar').data('value'), false);
+    }
+    
+    var fb_class = '';
+    var dc_class = '#gallery_re_contents tbody td.reply';
+    chrome.tabs.executeScript(null, {
+        code: 'document.querySelectorAll("' + dc_class + '.filtered_text").forEach(function(item) {' +
+                  sub_code +
+              '});'
+    });
+});
+
+var progress_work = function(percent, change_value) {
+    progress_subwork(0, change_value);
+    if (percent !== 0) {
+        setTimeout(function() {
+            progress_subwork(percent, change_value);
+        }, 1000);
+    }
+};
+
+var progress_subwork = function(percent, change_value) {
+    console.log("DEBUG progress: ", percent);
+    var progress_bar = $('#result .progress-bar');
+    progress_bar.width(percent + '%');
+    progress_bar.text(percent + '% Filtered');
+    if (change_value) {
+        progress_bar.data('value', percent);
+    }
+
+    if (percent == 0) {
+        progress_bar.removeClass('progress-bar-success').removeClass('progress-bar-warning').removeClass('progress-bar-danger');
+    } else if (percent < 30) {
+        progress_bar.addClass('progress-bar-success');
+    } else if (percent < 70) {
+        progress_bar.removeClass('progress-bar-success').addClass('progress-bar-warning');
+    } else {
+        progress_bar.removeClass('progress-bar-warning').addClass('progress-bar-danger');
+    }
+};
