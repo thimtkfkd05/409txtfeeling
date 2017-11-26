@@ -24,6 +24,10 @@ h1 {
 	margin-left: 5px;
     font-size: 14px;
 }
+#result .progress-bar {
+    color: #ababab;
+    text-align: center;
+}
 
 #emotion_check {
     float: right;
