@@ -29,7 +29,31 @@ var get_text_dc = function(callback) {
     });
 };
 
-var filtering_list = /싫음|분노|짜증남|알 수 없음/; // change this by user selection
+var filtering_list = '';
+$('#filter_list_div input').map(function (idx, obj) {
+    if (obj.checked) {
+        filtering_list += $(obj).parent().text().trim() + '|';
+    }
+});
+filtering_list = new RegExp(filtering_list);
+
+$(document).on('click', '[name="emotion_filter_show"]', function() {
+    if ($(this).val() == 'y') {
+        $('#filter_list_div').show();
+    } else {
+        $('#filter_list_div').hide();
+    }
+});
+
+$(document).on('click', '#filter_list_div input[type="checkbox"]', function() {
+    filtering_list = '';
+    $('#filter_list_div input').map(function (idx, obj) {
+        if (obj.checked) {
+            filtering_list += $(obj).parent().text().trim() + '|';
+        }
+    });
+    filtering_list = new RegExp(filtering_list);
+});
 
 var print_emotion = function(check, callback) {
     if (!callback || typeof callback !== 'function') {
