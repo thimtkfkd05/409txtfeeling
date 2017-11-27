@@ -3,7 +3,7 @@ body {
     padding: 10px;
     white-space: nowrap;
     overflow: auto;
-    width: 109px;
+    width: 300px;
 }
 
 h1 {
@@ -23,15 +23,24 @@ h1 {
 #result {
 	margin-left: 5px;
     font-size: 14px;
+    position: relative;
 }
-#result .progress-bar {
+#result .progress-bar span {
     color: #ababab;
+    width: 100%;
+    position: absolute;
+    display: block;
+}
+
+#blacklist {
+    padding-bottom: 30px;
+}
+#blacklist .blist_row td + td {
     text-align: center;
 }
 
 #emotion_check {
     float: right;
-    margin: 10px 0;
 }
 
 #filter_switch, #filter_switch .btn {

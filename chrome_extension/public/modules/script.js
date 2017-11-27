@@ -18,7 +18,7 @@ var get_text_dc = function(callback) {
             $('#copy_reply').html(result[0]);
             $('#copy_reply td.reply span').remove();
             
-            if ($('#copy_reply td.reply p').length) {
+            if ($('#copy_reply td.reply.filtered_text').length) {
                 callback(null, 'already_check');
             } else {
                 callback('#gallery_re_contents tbody > tr:nth-child([IDX]) td.reply', document.querySelectorAll('#copy_reply td.reply'), [4, 1]);
@@ -31,15 +31,20 @@ var get_text_dc = function(callback) {
 
 var filtering_list = /싫음|분노|짜증남|알 수 없음/; // change this by user selection
 
-var print_emotion = function(check) {
+var print_emotion = function(check, callback) {
+    if (!callback || typeof callback !== 'function') {
+        callback = function() {};
+    }
     //var get_text = get_text_fb;
-    var get_text = get_text_dc;
+    var get_text = get_text_dc; // CHANGE
     get_text(function(className, result, idx_info) {
         progress_work(0, true);
         var total_num = 0;
         var filtered_num = 0;
         if (className && result && check) {
+            $('#emotion_check').attr('disabled', true);
             total_num = result.length;
+            var count = 0;
             result.forEach(function(item, idx) {
                 $.post('http://localhost:3000/external_api', {
                     url: 'http://home.iacryl.com:7070/', 
@@ -65,11 +70,11 @@ var print_emotion = function(check) {
                     
                         var inner_className = className.replace(/\[IDX\]/g, idx_info && idx_info.length ? idx_info[0]*idx + idx_info[1] : idx);
                         var script_code = [
-                            'var e = document.createElement("p");',
-                            'e.innerHTML="The main emotion of this article is ' + main_emotion + '";',
-                            'e.setAttribute("style", "color: initial;");',
+                            //'var e = document.createElement("p");',
+                            //'e.innerHTML="The main emotion of this article is ' + main_emotion + '";',
+                            //'e.setAttribute("style", "color: initial;");',
                             'var article = document.querySelector("' + inner_className + '");', // add parentElement in fb
-                            'article.insertBefore(e, article.childNodes[0]);'
+                            //'article.insertBefore(e, article.childNodes[0]);'
                         ].join('');
 
                         if (main_emotion.match(filtering_list)) {
@@ -81,12 +86,21 @@ var print_emotion = function(check) {
                         chrome.tabs.executeScript(null, {
                             code: script_code
                         }, function() {
-                            $('#emotion_check').attr('disabled', true);
-
+                            count++;
                             var percent = parseInt(filtered_num / total_num / 1000 * 100000, 10);
                             progress_work(percent, true);
+
+                            if (count == total_num) {
+                                $('#emotion_check').attr('disabled', false);
+                                callback();
+                            }
                         });
                     } else {
+                        count++;
+                        if (count == total_num) {
+                            $('#emotion_check').attr('disabled', false);
+                            callback();
+                        }
                         //$('#result').html($('#result').html() + '<br>Cannot find any text or emotion.');
                     }
                 });
@@ -101,18 +115,70 @@ var print_emotion = function(check) {
             */
             var percent = parseInt($('#copy_reply td.reply.filtered_text').length / $('#copy_reply td.reply').length / 1000 * 100000, 10);
             progress_work(percent, true);
+            callback();
         } else if (check) {
             console.log("No Text Found");
+            callback('no_text');
         }
     });
 };
 
 $(document).ready(function() {
-    print_emotion(false);
+    var type = 'dc'; // CHANGE
+    get_blacklist(type, true);
 });
 
 $(document).on('click', '#emotion_check', function() {
-    print_emotion(true);
+    print_emotion(true, function(emotion_err) {
+        if (!emotion_err) {
+            var list = [];
+            var add_list = [];
+            var get_text;
+            var type = 'dc'; // CHANGE
+
+            chrome.tabs.executeScript(null, {
+                code: 'document.querySelector("#gallery_re_contents").innerHTML'
+            }, function(result) {
+                $('#copy_after').html(result[0]);
+                $('#copy_after tbody td.reply.filtered_text').map(function(idx, obj) {
+                    if ($(obj).find('.etc_ip').length) {
+                        var id = $(obj).find('.etc_ip').text();
+                        var text = $(obj).text();
+                        var article = text.substring(0, text.indexOf(id));
+                        
+                        if (list[id]) {
+                            list[id].filtered_num++;
+                            list[id].article.push(article);
+                        } else {
+                            list[id] = {
+                                filtered_num: 1,
+                                article: [article]
+                            };
+                        }
+                    }
+                });
+
+                Object.keys(list).map(function(id) {
+                    add_list.push({
+                        id: id,
+                        filtered_num: list[id].filtered_num,
+                        article: list[id].article
+                    });
+                });
+                
+                $.post('http://localhost:3000/add_blacklist', {
+                    list: add_list,
+                    type: type
+                }, function(res) {
+                    if (res.err) {
+                        console.log(res.err);
+                    } else {
+                        get_blacklist(type, false);
+                    }
+                });
+            });
+        }
+    });
 });
 
 $(document).on('click', '#filter_switch', function() {
@@ -134,14 +200,40 @@ $(document).on('click', '#filter_switch', function() {
     
     var fb_class = '';
     var dc_class = '#gallery_re_contents tbody td.reply';
-    chrome.tabs.executeScript(null, {
+    chrome.tabs.executeScript(null, { // CHANGE
         code: 'document.querySelectorAll("' + dc_class + '.filtered_text").forEach(function(item) {' +
                   sub_code +
               '});'
     });
 });
 
-var progress_work = function(percent, change_value) {
+var get_blacklist = function(type, for_init) {
+    var middle = for_init ? print_emotion : function(nothing, callback) {callback();};
+    $.get('http://localhost:3000/get_blacklist', {
+        type: type
+    }, function(res) {
+        var list = res.result || [];
+        middle(false, function(_err) {
+            if (!res.err && !_err) {
+                var template = function(id, num) {
+                    return [
+                        '<tr class="blist_row">',
+                            '<td class="col-xs-9"> ' + id + '</td>',
+                            '<td class="col-xs-3"> ' + num + '</td>',
+                        '</tr>'
+                    ].join('');
+                };
+                list.map(function(item) {
+                    $('#blacklist .blist_table tbody').append(template(item.id, item.filtered_num));
+                });
+            } else {
+                console.log(_err);
+            }
+        });
+    });
+};
+
+var progress_subwork = function(percent, change_value) {
     progress_subwork(0, change_value);
     if (percent !== 0) {
         setTimeout(function() {
@@ -150,11 +242,11 @@ var progress_work = function(percent, change_value) {
     }
 };
 
-var progress_subwork = function(percent, change_value) {
-    console.log("DEBUG progress: ", percent);
+var progress_work = function(percent, change_value) {
     var progress_bar = $('#result .progress-bar');
+    var progress_text = $('#result .progress-bar .progress-text');
     progress_bar.width(percent + '%');
-    progress_bar.text(percent + '% Filtered');
+    progress_text.text(percent + '% Filtered');
     if (change_value) {
         progress_bar.data('value', percent);
     }
