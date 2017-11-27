@@ -3,7 +3,6 @@ body {
     padding: 10px;
     white-space: nowrap;
     overflow: auto;
-    width: 300px;
 }
 
 h1 {
@@ -23,26 +22,36 @@ h1 {
 #result {
 	margin-left: 5px;
     font-size: 14px;
-    position: relative;
-}
-#result .progress-bar span {
-    color: #ababab;
-    width: 100%;
-    position: absolute;
-    display: block;
-}
-
-#blacklist {
-    padding-bottom: 30px;
-}
-#blacklist .blist_row td + td {
-    text-align: center;
 }
 
 #emotion_check {
     float: right;
+    margin: 10px 0;
 }
 
-#filter_switch, #filter_switch .btn {
-    outline: none;
+#filter_list_div{
+    width: 380px;
+}
+#filter_list_div label{
+    width: 20%;
+
+}
+#filter_list_div div{
+    margin: 3px;
+}
+#emotion_filter_list{
+    margin: 5px;
+}
+.input-group{
+    margin-left: 5px;
+}
+.input-group span{
+    font-weight: bold;
+}
+.input-group label{
+    padding-right: 10px;
+    font-weight: lighter;
+}
+.filter_title{
+    padding-right: 10px;
 }
