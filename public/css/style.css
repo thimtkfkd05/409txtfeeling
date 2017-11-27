@@ -1,0 +1,57 @@
+body {
+    margin: 5px 10px;
+    padding: 10px;
+    white-space: nowrap;
+    overflow: auto;
+}
+
+h1 {
+    font-size: 15px;
+    margin-top: 0;
+    margin-left: 5px;
+}
+
+#user {
+    width: 100%;
+    font-size: 13px;
+    margin-bottom: 10px;
+    padding: 2px 7px;
+    outline: none;
+}
+
+#result {
+	margin-left: 5px;
+    font-size: 14px;
+}
+
+#emotion_check {
+    float: right;
+    margin: 10px 0;
+}
+
+#filter_list_div{
+    width: 380px;
+}
+#filter_list_div label{
+    width: 20%;
+
+}
+#filter_list_div div{
+    margin: 3px;
+}
+#emotion_filter_list{
+    margin: 5px;
+}
+.input-group{
+    margin-left: 5px;
+}
+.input-group span{
+    font-weight: bold;
+}
+.input-group label{
+    padding-right: 10px;
+    font-weight: lighter;
+}
+.filter_title{
+    padding-right: 10px;
+}
