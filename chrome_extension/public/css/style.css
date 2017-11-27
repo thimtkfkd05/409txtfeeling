@@ -46,3 +46,30 @@ h1 {
 #filter_switch, #filter_switch .btn {
     outline: none;
 }
+
+#filter_list_div{
+    width: 380px;
+}
+#filter_list_div label{
+    width: 20%;
+
+}
+#filter_list_div div{
+    margin: 3px;
+}
+#emotion_filter_list{
+    margin: 5px;
+}
+.input-group{
+    margin-left: 5px;
+}
+.input-group span{
+    font-weight: bold;
+}
+.input-group label{
+    padding-right: 10px;
+    font-weight: lighter;
+}
+.filter_title{
+    padding-right: 10px;
+}
