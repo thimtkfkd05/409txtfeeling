@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Text Feeling</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../public/libs/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../public/css/style.css">
+  </head>
+
+  <body>
+    <h1>Text Feeling</h1>
+    <div id="result"></div>
+    <table id="copy_reply" style="display: none;"></table>
+
+    <div class="input-group">
+      <span class="filter_title">show_filter_list</span>
+      <label><input type="radio" name="emotion_filter_show" value="y"> yes</input></label>
+      <label><input type="radio" name="emotion_filter_show" value="n" checked> no</input></label>
+    </div>
+
+
+    <div id="filter_list_div" style="display:none;">
+      <div id="filter_list_line1">
+        <label>
+          <input type="checkbox" id="checkbox_dislike" checked>
+          싫음
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_anger" checked>
+          분노
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_annoying" checked>
+          짜증남
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_hate" checked>
+          미워함
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_chagrin">
+          억울함
+        </label>
+      </div>
+      <div id="filter_list_line2">
+
+        <label>
+          <input type="checkbox" id="checkbox_disappoint">
+          실망
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_uninterested">
+          무관심
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_worrying">
+          불안
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_boring">
+          지루함
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_regret">
+          후회
+        </label>
+      </div>
+      <div id="filter_list_line3">
+
+        <label>
+          <input type="checkbox" id="checkbox_love" checked>
+          사랑
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_ecstasy" checked>
+          황홀함
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_romance" checked>
+          설렘
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_satisfied">
+          만족
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_yearning">
+          그리움
+        </label>
+      </div>
+      <div id="filter_list_line4">
+        <label>
+          <input type="checkbox" id="checkbox_thankful">
+          고마움
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_touched">
+          감동
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_happy">
+          행복
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_fun">
+          즐거움
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_pleased">
+          기쁨
+        </label>
+      </div>
+      <div id="filter_list_line5">
+
+        <label>
+          <input type="checkbox" id="checkbox_suffering">
+          괴로움
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_lonely">
+          외로움
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_fear">
+          두려움
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_misery">
+          안타까움
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_embarrassed">
+          창피함
+        </label>
+      </div>
+      <div id="filter_list_line6">
+
+        <label>
+          <input type="checkbox" id="checkbox_sorrow">
+          슬픔
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_sorry">
+          미안함
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_envious">
+          부러움
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_shocked">
+          놀람
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_confused">
+          당황
+        </label>
+      </div>
+      <div id="filter_list_line7">
+
+        <label>
+          <input type="checkbox" id="checkbox_wish">
+          바람
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_confident">
+          자신감
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_lighthearted">
+          홀가분함
+        </label>
+        <label>
+          <input type="checkbox" id="checkbox_middle">
+          중립
+        </label>
+      </div>
+    </div>
+
+    <button class="btn btn-default" id="emotion_check">Check</button>
+
+    <script src="../public/libs/jquery/jquery.min.js"></script>
+    <script src="../public/libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../public/modules/script.js"></script>
+  </body>
+</html>
