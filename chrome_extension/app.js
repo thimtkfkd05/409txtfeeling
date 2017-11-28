@@ -65,13 +65,17 @@ app.post('/external_api', function(req, res) {
     });
 });
 
-app.get('/get_blacklist', function(req, res) {
+app.post('/get_blacklist', function(req, res) {
     var db_list = db.collection('BlackLists');
+    var id_list = req.body.id_list;
 
     db_list.find({
-        type: req.query.type,
+        type: req.body.type,
         filtered_num: {
-            $gt: 1 // CHANGE
+            $gt: 5 // CHANGE
+        },
+        id: {
+            $in: id_list
         }
     }, {
         _id: 0
