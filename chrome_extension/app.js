@@ -29,12 +29,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(methodOverride());
-// app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(errorHandler());
 
-//app.get('/', routes.index);
 app.post('/external_api', function(req, res) {
     var url = req.body.url + '?';
     var options = req.body.options;
@@ -68,11 +66,10 @@ app.post('/external_api', function(req, res) {
 app.post('/get_blacklist', function(req, res) {
     var db_list = db.collection('BlackLists');
     var id_list = req.body.id_list;
-
     db_list.find({
         type: req.body.type,
         filtered_num: {
-            $gt: 5 // CHANGE
+            $gt: 1 // CHANGE
         },
         id: {
             $in: id_list
