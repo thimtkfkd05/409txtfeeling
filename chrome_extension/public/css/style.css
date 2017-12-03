@@ -3,13 +3,28 @@ body {
     padding: 10px;
     white-space: nowrap;
     overflow: auto;
-    width: 300px;
+    width: 318px;
 }
 
-h1 {
-    font-size: 15px;
+h3 {
     margin-top: 0;
     margin-left: 5px;
+}
+.sub_sub_title {
+    margin-left: 5px;
+}
+
+.sub_title {
+    font-size: 16px;
+    font-weight: bold;
+    padding-left: 5px;
+    padding-bottom: 10px;
+    margin-top: -10px;
+}
+
+.small_sub_title {
+    font-size: 14px;
+    font-weight: normal;
 }
 
 #user {
@@ -32,11 +47,17 @@ h1 {
     display: block;
 }
 
-#blacklist {
-    padding-bottom: 30px;
-}
 #blacklist .blist_row td + td {
     text-align: center;
+}
+#blacklist .blist_table {
+    margin: 0 auto;
+}
+#blacklist .blist_table td {
+    padding: 0 10px;
+}
+#blacklist .blist_table .blist_header td {
+    padding-bottom: 5px;
 }
 
 #emotion_check {
@@ -47,6 +68,10 @@ h1 {
     outline: none;
 }
 
+.default_list {
+    margin-top: -10px;
+    padding: 0 5px 10px;
+}
 #filter_list_div{
     width: 380px;
 }

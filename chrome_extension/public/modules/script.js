@@ -69,7 +69,7 @@ var make_filtering_list = function() {
     return filtering_list;
 };
 
-var slang_list = new RegExp(decodeURIComponent('%EC%A1%B4%EB%82%98|%EC%94%A8%EB%B0%9C|%EA%B0%9C%EC%83%88%EB%81%BC|%EB%B3%91%EC%8B%A0|%EB%AF%B8%EC%B9%9C|%E3%85%81%E3%85%8A|%E3%85%85%E3%85%82|%E3%85%88%E3%84%B9|%EB%AF%B8%EC%B9%9C%EB%85%84|%EC%A7%80%EB%9E%84|%EC%94%A8%EB%B0%9C%EB%85%84|%EB%8B%A5%EC%B3%90|%EB%85%84|%EC%97%A0%EC%B0%BD|%EC%97%84%EC%B0%BD|%EC%A1%B8%EB%9D%BC|%EC%8D%85|%EC%A2%86|%EC%95%A0%EC%9E%90|%EB%8B%88%EB%AF%B8|%EC%8B%9C%EB%B0%9C|%EB%8A%90%EA%B7%B8%20%EC%97%84%EB%A7%88|%EC%8B%B8%EA%B0%80%EC%A7%80|%EC%A0%A0%EC%9E%A5|%EB%8A%90%EA%B8%88|%EA%B0%9C%EC%94%A8%EB%B0%9C|%EC%A2%86%EA%B0%99%EC%9D%80|%EB%B9%A0%ED%81%90|%EB%BB%90%ED%81%90|%EC%94%B9%EC%B0%BD|%EC%9E%A1%EB%85%84|%EA%B3%A0%EC%9E%90|%EC%9E%A5%EC%95%A0%EC%83%88%EB%81%BC|%EB%98%90%EB%9D%BC%EC%9D%B4|%EC%A2%85%EA%B0%84%EB%82%98|%EC%B0%90%EB%94%B0|%EA%B0%84%EB%82%98%EC%83%88%EB%81%BC|%EB%B2%84%EB%9F%AC%EC%A7%80'), 'g');
+var slang_list = new RegExp(decodeURIComponent('%EC%A1%B4%EB%82%98|%EC%94%A8%EB%B0%9C|%EA%B0%9C%EC%83%88%EB%81%BC|%EB%B3%91%EC%8B%A0|%EB%AF%B8%EC%B9%9C|%E3%85%81%E3%85%8A|%E3%85%85%E3%85%82|%E3%85%88%E3%84%B9|%EB%AF%B8%EC%B9%9C%EB%85%84|%EC%A7%80%EB%9E%84|%EC%94%A8%EB%B0%9C%EB%85%84|%EB%8B%A5%EC%B3%90|%EB%85%84|%EC%97%A0%EC%B0%BD|%EC%97%84%EC%B0%BD|%EC%A1%B8%EB%9D%BC|%EC%8D%85|%EC%A2%86|%EC%95%A0%EC%9E%90|%EB%8B%88%EB%AF%B8|%EC%8B%9C%EB%B0%9C|%EB%8A%90%EA%B7%B8%20%EC%97%84%EB%A7%88|%EC%8B%B8%EA%B0%80%EC%A7%80|%EC%A0%A0%EC%9E%A5|%EB%8A%90%EA%B8%88|%EA%B0%9C%EC%94%A8%EB%B0%9C|%EC%A2%86%EA%B0%99%EC%9D%80|%EB%B9%A0%ED%81%90|%EB%BB%90%ED%81%90|%EC%94%B9%EC%B0%BD|%EC%9E%A1%EB%85%84|%EA%B3%A0%EC%9E%90|%EC%9E%A5%EC%95%A0%EC%83%88%EB%81%BC|%EB%98%90%EB%9D%BC%EC%9D%B4|%EC%A2%85%EA%B0%84%EB%82%98|%EC%B0%90%EB%94%B0|%EA%B0%84%EB%82%98%EC%83%88%EB%81%BC|%EB%B2%84%EB%9F%AC%EC%A7%80|%EC%94%B9'), 'g');
 
 $(document).on('click', '[name="emotion_filter_show"]', function() {
     if ($(this).val() == 'y') {
@@ -109,12 +109,12 @@ var print_emotion = function(check, callback) {
                     }, function(res) {
                         if (res.sentences) {
                             var sentences = res.sentences;
-                            var all_sentence = '';
+                            //var all_sentence = '';
                             var main_emotion = '';
                             sentences.map(function(data, i) {
                                 var emotions = data.emotions || null;
                                 main_emotion += emotions && emotions[0] ? (emotions[0].emotion || '알 수 없음') : '알 수 없음';
-                                all_sentence += data.sentence || '';
+                                //all_sentence += data.sentence || '';
                                 main_emotion += ', ';
                             });
                             main_emotion = main_emotion ? main_emotion.substring(0, main_emotion.length-2) : '';
@@ -128,7 +128,7 @@ var print_emotion = function(check, callback) {
                             }
                             var script_code = 'var article = document.querySelector("' + inner_className + '");';
 
-                            if (filtering_list && main_emotion.match(filtering_list)) {
+                            if ((filtering_list && main_emotion.match(filtering_list)) || ($('[name="slang_filter"]:checked').val() == 'y' && item.innerText.match(slang_list))) {
                                 script_code += 'article.setAttribute("style", "color: #eee;");';
                                 script_code += 'article.className += " filtered_text";';
                                 filtered_num++;
@@ -293,6 +293,7 @@ var get_blacklist = function(type, for_init) {
     $('#blacklist .blist_table tbody').empty();
     var middle = for_init ? print_emotion : function(nothing, callback) {callback();};
     var id_list = [];
+    var name_list = [];
     var get_whole_code;
     if (type == 'fb') {
         get_whole_code = 'var result="";document.querySelectorAll(".UFICommentActorAndBody").forEach(function(el){result += el.outerHTML;});result;';
@@ -317,6 +318,9 @@ var get_blacklist = function(type, for_init) {
                 var id = $(obj).text();
                 if (id_list.indexOf(id) < 0) {
                     id_list.push($(obj).text());
+                    if (type == 'dc') {
+                        name_list.push($(obj).parents('tr.reply_line').find('.user_nick_nm').text());
+                    }
                 }
             });
         }
@@ -337,6 +341,9 @@ var get_blacklist = function(type, for_init) {
                         ].join('');
                     };
                     list.map(function(item) {
+                        if (type == 'dc') {
+                            item.id = name_list[id_list.indexOf(item.id)] + ' / ' + item.id;
+                        }
                         $('#blacklist .blist_table tbody').append(template(item.id, item.filtered_num));
                     });
                 } else {
@@ -351,7 +358,7 @@ var progress_work = function(percent, change_value) {
     var progress_bar = $('#result .progress-bar');
     var progress_text = $('#result .progress-bar .progress-text');
     progress_bar.width(percent + '%');
-    progress_text.text(percent + '% Filtered');
+    progress_text.text(percent + '% Erased');
     if (change_value) {
         progress_bar.data('value', percent);
     }
