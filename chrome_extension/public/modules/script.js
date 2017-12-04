@@ -53,34 +53,20 @@ var get_text_dc = function(callback) {
 };
 var make_filtering_list = function() {
     var filtering_list = '';
-
-    if ($('[name="emotion_filter_show"]:checked').val() == 'y') {
-        var len = $('#filter_list_div input').length;
-        $('#filter_list_div input').map(function (idx, obj) {
-            if (obj.checked) {
-                filtering_list += $(obj).parent().text().trim() + '|';
-            }
-        });
-        filtering_list = new RegExp(filtering_list ? filtering_list.substring(0, filtering_list.length-1) : '');
-    } else {
-        filtering_list = default_filtering_list;
-    }
+    var len = $('#filter_list_div input').length;
+    $('#filter_list_div input').map(function (idx, obj) {
+        if (obj.checked) {
+            filtering_list += $(obj).parent().text().trim() + '|';
+        }
+    });
+    filtering_list = new RegExp(filtering_list ? filtering_list.substring(0, filtering_list.length-1) : '');
 
     return filtering_list;
 };
 
 var slang_list = new RegExp(decodeURIComponent('%EC%A1%B4%EB%82%98|%EC%94%A8%EB%B0%9C|%EA%B0%9C%EC%83%88%EB%81%BC|%EB%B3%91%EC%8B%A0|%EB%AF%B8%EC%B9%9C|%E3%85%81%E3%85%8A|%E3%85%85%E3%85%82|%E3%85%88%E3%84%B9|%EB%AF%B8%EC%B9%9C%EB%85%84|%EC%A7%80%EB%9E%84|%EC%94%A8%EB%B0%9C%EB%85%84|%EB%8B%A5%EC%B3%90|%EB%85%84|%EC%97%A0%EC%B0%BD|%EC%97%84%EC%B0%BD|%EC%A1%B8%EB%9D%BC|%EC%8D%85|%EC%A2%86|%EC%95%A0%EC%9E%90|%EB%8B%88%EB%AF%B8|%EC%8B%9C%EB%B0%9C|%EB%8A%90%EA%B7%B8%20%EC%97%84%EB%A7%88|%EC%8B%B8%EA%B0%80%EC%A7%80|%EC%A0%A0%EC%9E%A5|%EB%8A%90%EA%B8%88|%EA%B0%9C%EC%94%A8%EB%B0%9C|%EC%A2%86%EA%B0%99%EC%9D%80|%EB%B9%A0%ED%81%90|%EB%BB%90%ED%81%90|%EC%94%B9%EC%B0%BD|%EC%9E%A1%EB%85%84|%EA%B3%A0%EC%9E%90|%EC%9E%A5%EC%95%A0%EC%83%88%EB%81%BC|%EB%98%90%EB%9D%BC%EC%9D%B4|%EC%A2%85%EA%B0%84%EB%82%98|%EC%B0%90%EB%94%B0|%EA%B0%84%EB%82%98%EC%83%88%EB%81%BC|%EB%B2%84%EB%9F%AC%EC%A7%80|%EC%94%B9'), 'g');
 
-$(document).on('click', '[name="emotion_filter_show"]', function() {
-    if ($(this).val() == 'y') {
-        $('#filter_list_div').show();
-    } else {
-        $('#filter_list_div').hide();
-    }
-});
-
 var type;
-var default_filtering_list;
 
 var print_emotion = function(check, callback) {
     if (!callback || typeof callback !== 'function') {
@@ -174,15 +160,10 @@ $(document).ready(function() {
     get_type(function(result) {
         type = result;
         if (type == 'fb' || type == 'dc') {
+            $('.popup_container').show();
+            if (type == 'fb') $('.blist_id_header').text(' Name');
+            else $('.blist_id_header').text(' Name / IP Address');
             get_blacklist(type, true);
-            
-            var filtering_list = '';
-            $('#filter_list_div input').map(function (idx, obj) {
-                if (obj.checked) {
-                    filtering_list += $(obj).parent().text().trim() + '|';
-                }
-            });
-            default_filtering_list = new RegExp(filtering_list ? filtering_list.substring(0, filtering_list.length-1) : '');
             
             chrome.tabs.executeScript({
                 code: 'document.querySelectorAll(".filtered_text").length / document.querySelectorAll(".UFICommentBody").length'
@@ -191,6 +172,7 @@ $(document).ready(function() {
                 $('#emotion_check').attr('disabled', false);
             });
         } else {
+            $('.not_working').text('Sorry. You cannot erase emotions in this page.');
             console.log('Cannot filter emotion in this page.');
             $('#emotion_check').attr('disabled', true);
         }

@@ -23,7 +23,7 @@ var db;
 app.set('port', port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-app.use(logger('dev'));
+app.use(logger(':method :url :status :response-time ms - :res[content-length] :date[iso]'));
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -202,3 +202,19 @@ http.createServer(app).listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));
     connect_db();
 });
+
+var script = function(db) {
+    db.collection('BlackLists').update({
+        filtered_num: {
+            $lt: 5
+        }
+    }, {
+        $set: {
+            filtered_num: 0
+        }
+    }, {
+        multi: true
+    }, function(err, res) {
+        console.log(err, res);
+    });
+};
